@@ -1,24 +1,24 @@
 """
-CrewAI Multi-Agent Demo: Travel Planning System (REAL API VERSION)
+CrewAI Multi-Agent Demo: Startup Analysis System (REAL API VERSION)
 ==================================================================
 
 This implementation uses REAL OpenAI API calls and web search to gather
-actual travel information for planning a 5-day trip to Iceland.
+actual startup information for comprehensive startup analysis.
 
 Agents use:
 1. OpenAI GPT-4 for intelligent research and recommendations
-2. Web search for real-time flight, hotel, and attraction data
-3. Real travel data from current sources
+2. Web search for real-time market data and startup information
+3. Real competitive analysis data from current sources
 
 Agents:
-1. FlightAgent - Flight Specialist (researches real flight options)
-2. HotelAgent - Accommodation Specialist (finds real hotels)
-3. ItineraryAgent - Travel Planner (creates realistic itineraries)
-4. BudgetAgent - Financial Advisor (analyzes real costs)
+1. StartupScout - Startup Discovery Specialist (researches emerging startups)
+2. MarketAnalyst - Competitive Analysis Expert (analyzes market competition)
+3. ProductStrategist - Product Pitch Specialist (creates compelling pitches)
+4. FeatureAnalyst - Feature Analysis Expert (evaluates product features)
 
 Configuration:
 - Uses shared configuration from the root .env file
-- Environment variables set in /Users/pranavhharish/Desktop/IS-492/multi-agent/.env
+- Environment variables set in .env file at project root
 """
 
 import os
@@ -42,99 +42,125 @@ from shared_config import Config, validate_config
 # ============================================================================
 
 @tool
-def search_flight_prices(destination: str, departure_city: str = "New York") -> str:
+def search_emerging_startups(industry: str, location: str = "US") -> str:
     """
-    Search for real flight prices and options to a destination.
-    Uses web search to find current flight information from major booking sites.
+    Search for emerging startups in a specific industry and location.
+    Uses web search to find current information from startup databases and news.
     """
-    search_query = f"flights from {departure_city} to {destination} prices 2026 best options"
+    search_query = f"emerging startups {industry} {location} 2025 seed funding series A"
 
-    # In production, this would use a real flight API (Skyscanner, Kayak, etc.)
-    # For now, the LLM will use this to inform its research
     return f"""
-    Research task: Find flights from {departure_city} to {destination}.
+    Research task: Find emerging startups in {industry} within {location}.
 
     Please research and provide:
-    1. Current flight options with prices (check Kayak, Skyscanner, Google Flights)
-    2. Airlines operating these routes
-    3. Flight durations and layover information
-    4. Best booking times and price trends
-    5. Seasonal pricing variations
+    1. Recently funded startups (check Crunchbase, PitchBook, AngelList)
+    2. Startup founding teams and their backgrounds
+    3. Funding rounds and investor information
+    4. Problem they're solving and target market
+    5. Current traction and growth metrics
+    6. Notable achievements and press coverage
 
-    Focus on realistic, current pricing for January 2026 travel.
+    Focus on startups founded within the last 3 years with recent activity.
     """
 
 
 @tool
-def search_hotel_options(location: str, check_in_date: str) -> str:
+def analyze_competitors(startup_name: str, industry: str) -> str:
     """
-    Search for real hotel options using web search.
-    Provides current hotel availability and pricing information.
+    Analyze direct and indirect competitors of a startup.
+    Provides comprehensive competitive landscape analysis.
     """
-    search_query = f"hotels in {location} {check_in_date} reviews ratings prices 2026"
+    search_query = f"{startup_name} competitors {industry} market share comparison analysis"
 
     return f"""
-    Research task: Find hotels in {location} for check-in {check_in_date}.
+    Research task: Analyze competitors of {startup_name} in the {industry} space.
 
     Please research and provide:
-    1. Top-rated hotels with guest reviews (check Booking.com, TripAdvisor, Google Hotels)
-    2. Current pricing for 5-night stays
-    3. Hotel amenities and facilities
-    4. Location details and proximity to attractions
-    5. Guest ratings and recommendation reasons
+    1. Direct competitors with similar offerings (check G2, Capterra, ProductHunt)
+    2. Market share and positioning of each competitor
+    3. Competitive advantages and unique selling propositions
+    4. Pricing strategies and business models
+    5. Customer reviews and satisfaction ratings
+    6. Recent product launches and strategic moves
+    7. Strengths and weaknesses analysis
 
-    Include budget, mid-range, and luxury options.
-    Focus on hotels with high ratings and realistic current prices.
+    Include both established players and emerging competitors.
+    Focus on actionable competitive insights.
     """
 
 
 @tool
-def search_attractions_activities(destination: str) -> str:
+def analyze_product_features(product_name: str, category: str) -> str:
     """
-    Search for real attractions and activities in a destination.
-    Provides comprehensive information about popular sites and experiences.
+    Analyze product features and user feedback for a specific product.
+    Provides detailed feature analysis and improvement suggestions.
     """
-    search_query = f"{destination} attractions activities tours things to do 2026"
+    search_query = f"{product_name} features review analysis user feedback {category}"
 
     return f"""
-    Research task: Find attractions and activities in {destination}.
+    Research task: Analyze features of {product_name} in the {category} space.
 
     Please research and provide:
-    1. Top-rated attractions and their estimated visit times
-    2. Popular day tours and multi-day excursions
-    3. Outdoor activities (hiking, water sports, wildlife viewing)
-    4. Cultural sites and local experiences
-    5. Typical costs for tours and entrance fees
-    6. Best time to visit each location
-    7. Transportation options between sites
+    1. Core features and functionality overview
+    2. User reviews and feature-specific feedback (check ProductHunt, G2, Reddit)
+    3. Feature comparison with competing products
+    4. Most requested features from users
+    5. Technical specifications and integrations
+    6. Usability and user experience insights
+    7. Feature gaps and improvement opportunities
 
-    Include hidden gems and less-known but highly-rated activities.
-    Focus on realistic itineraries that can be completed in 5 days.
+    Include both positive feedback and pain points.
+    Focus on actionable insights for product development.
     """
 
 
 @tool
-def search_travel_costs(destination: str) -> str:
+def research_market_trends(industry: str, timeframe: str = "2025") -> str:
     """
-    Search for real travel costs and budgeting information.
-    Provides current pricing for meals, activities, and transportation.
+    Research market trends and opportunities in a specific industry.
+    Provides insights on market dynamics and future opportunities.
     """
-    search_query = f"{destination} travel costs budget prices meals transport 2025"
+    search_query = f"{industry} market trends {timeframe} growth opportunities forecast"
 
     return f"""
-    Research task: Find cost information for a trip to {destination}.
+    Research task: Analyze market trends in the {industry} sector for {timeframe}.
 
     Please research and provide:
-    1. Average meal costs (budget, mid-range, restaurants)
-    2. Public transportation costs and rental car prices
-    3. Tour and activity pricing
-    4. Entrance fees for attractions
-    5. Estimated daily costs for different budget levels
-    6. Money-saving tips and best budget periods
-    7. Currency exchange rates and payment methods
+    1. Current market size and growth projections
+    2. Key trends driving the industry (check Gartner, McKinsey, industry reports)
+    3. Emerging technologies and innovations
+    4. Consumer behavior shifts and preferences
+    5. Regulatory changes and their impact
+    6. Investment trends and VC interest
+    7. Market opportunities and white spaces
 
-    Provide realistic, current pricing information for 2025.
-    Focus on actual costs travelers can expect.
+    Provide data-driven insights with credible sources.
+    Focus on actionable trends for startup opportunities.
+    """
+
+
+@tool
+def analyze_investment_potential(startup_name: str, industry: str, stage: str) -> str:
+    """
+    Analyze investment potential and funding requirements for a startup.
+    Provides insights on valuation, funding needs, and investor appeal.
+    """
+    search_query = f"{startup_name} {industry} funding valuation {stage} investment metrics"
+
+    return f"""
+    Research task: Analyze investment potential for {startup_name} in {industry} at {stage} stage.
+
+    Please research and provide:
+    1. Typical funding amounts for {stage} stage in {industry}
+    2. Key metrics investors look for (ARR, growth rate, burn rate, etc.)
+    3. Comparable startup valuations and exit multiples
+    4. Investor landscape and active VCs in this space
+    5. Funding timeline and milestones expectations
+    6. Risk factors and mitigation strategies
+    7. ROI projections and exit scenarios
+
+    Use data from PitchBook, Crunchbase, and recent funding rounds.
+    Focus on realistic valuation and actionable fundraising advice.
     """
 
 
@@ -142,81 +168,100 @@ def search_travel_costs(destination: str) -> str:
 # AGENT DEFINITIONS
 # ============================================================================
 
-def create_flight_agent(destination: str, trip_dates: str):
-    """Create the Flight Specialist agent with real research tools."""
+def create_startup_scout_agent(industry: str, location: str):
+    """Create the Startup Scout agent with real research tools."""
     return Agent(
-        role="Flight Specialist",
-        goal=f"Research and recommend the best flight options for the {destination} trip "
-             f"({trip_dates}), considering dates, airlines, prices, and flight durations. "
-             f"Use real data from flight booking sites to provide accurate, current pricing.",
-        backstory="You are an experienced flight specialist with deep knowledge of "
-                  "airline schedules, pricing patterns, and travel routes. You excel at "
-                  "finding the best flight options that balance cost and convenience. "
-                  "You have booked thousands of flights and know the best times to fly. "
-                  "You always research current prices and use real booking site data.",
-        tools=[search_flight_prices],
+        role="Startup Discovery Specialist",
+        goal=f"Discover and analyze emerging startups in the {industry} sector "
+             f"within {location}, identifying promising companies with innovative solutions. "
+             f"Use real data from startup databases and funding news to provide accurate insights.",
+        backstory="You are a seasoned startup scout with extensive experience in "
+                  "identifying promising early-stage companies. With a background in venture capital "
+                  "and deep connections in the startup ecosystem, you excel at spotting trends "
+                  "before they become mainstream. You have evaluated thousands of startups and "
+                  "have a keen eye for innovation, strong founding teams, and scalable business models. "
+                  "You always verify information from multiple sources including Crunchbase, AngelList, and industry news.",
+        tools=[search_emerging_startups],
         verbose=True,
         allow_delegation=False
     )
 
 
-def create_hotel_agent(destination: str, trip_dates: str):
-    """Create the Accommodation Specialist agent with real research tools."""
-    # Determine main city for hotels (if destination is just a country, use capital)
-    hotel_location = destination
-    if destination.lower() == "iceland":
-        hotel_location = "Reykjavik"
-    elif destination.lower() == "france":
-        hotel_location = "Paris"
-    elif destination.lower() == "japan":
-        hotel_location = "Tokyo"
-
+def create_market_analyst_agent(industry: str):
+    """Create the Market Analyst agent with competitive analysis tools."""
     return Agent(
-        role="Accommodation Specialist",
-        goal=f"Suggest top-rated hotels in {hotel_location} for the {destination} trip "
-             f"({trip_dates}), considering amenities, location, and value for money. "
-             f"Use real hotel data from booking sites with current prices and reviews.",
-        backstory="You are a seasoned accommodation expert with extensive knowledge of "
-                  "hotels worldwide. You understand traveler needs and can match them with "
-                  "perfect accommodations. You read reviews meticulously and know which "
-                  "hotels offer the best experience for different budgets. You always "
-                  "check current availability and actual guest reviews.",
-        tools=[search_hotel_options],
+        role="Competitive Analysis Expert",
+        goal=f"Conduct comprehensive competitive analysis in the {industry} market, "
+             f"identifying key players, market dynamics, and strategic opportunities. "
+             f"Use real market data and competitor information to provide actionable insights.",
+        backstory="You are a strategic market analyst with over 15 years of experience "
+                  "in competitive intelligence and market research. Having worked with Fortune 500 "
+                  "companies and top-tier consulting firms, you specialize in dissecting market "
+                  "landscapes and identifying competitive advantages. You combine data analytics "
+                  "with strategic thinking to uncover hidden opportunities. You meticulously "
+                  "analyze competitor strategies, market positioning, and customer sentiment "
+                  "using tools like G2, Capterra, and industry reports.",
+        tools=[analyze_competitors, research_market_trends],
         verbose=True,
         allow_delegation=False
     )
 
 
-def create_itinerary_agent(destination: str, trip_duration: str):
-    """Create the Travel Planner agent with real research tools."""
+def create_product_strategist_agent(industry: str):
+    """Create the Product Strategist agent with pitch creation tools."""
     return Agent(
-        role="Travel Planner",
-        goal=f"Create a detailed day-by-day travel plan with activities and attractions "
-             f"that maximize the {destination} experience in {trip_duration}. "
-             f"Use real current information about attractions, opening hours, and accessibility.",
-        backstory=f"You are a creative travel planner with a passion for {destination}. "
-                  f"You have extensive knowledge of {destination}'s attractions, culture, and hidden gems. "
-                  f"You create itineraries that are well-paced, exciting, and memorable. "
-                  f"You consider travel times, weather, and traveler preferences to craft the perfect journey. "
-                  f"You always verify current information about attractions and tours.",
-        tools=[search_attractions_activities],
+        role="Product Pitch Specialist",
+        goal=f"Create compelling product pitches and value propositions for startups "
+             f"in the {industry} sector, crafting narratives that resonate with investors and customers. "
+             f"Use market insights and competitive analysis to develop unique positioning.",
+        backstory="You are a master storyteller and product strategist who has helped "
+                  "launch over 100 successful products. With experience at top tech companies "
+                  "and as a startup founder yourself, you understand what makes products compelling. "
+                  "You excel at translating complex technical features into clear value propositions "
+                  "that resonate with target audiences. You craft pitches that have secured millions "
+                  "in funding and driven significant customer adoption. You always ground your "
+                  "strategies in market research and user insights.",
+        tools=[analyze_product_features],
         verbose=True,
         allow_delegation=False
     )
 
 
-def create_budget_agent(destination: str):
-    """Create the Financial Advisor agent with real cost research tools."""
+def create_feature_analyst_agent(category: str):
+    """Create the Feature Analyst agent with product analysis tools."""
     return Agent(
-        role="Financial Advisor",
-        goal=f"Calculate total trip costs for {destination} and identify cost-saving opportunities "
-             f"while maintaining quality. Use real current pricing data for all expenses.",
-        backstory="You are a meticulous financial advisor specializing in travel budgeting. "
-                  "You can analyze costs across flights, accommodations, activities, and meals. "
-                  "You identify hidden costs and suggest smart ways to save money without "
-                  "compromising the travel experience. You research actual current prices "
-                  "and provide realistic budget estimates.",
-        tools=[search_travel_costs],
+        role="Feature Analysis Expert",
+        goal=f"Analyze product features and user feedback for {category} products, "
+             f"identifying strengths, weaknesses, and opportunities for innovation. "
+             f"Use real user reviews and feature comparisons to provide actionable insights.",
+        backstory="You are a product analyst with deep expertise in feature optimization "
+                  "and user experience design. Having analyzed hundreds of products across "
+                  "various industries, you have a unique ability to identify what makes features "
+                  "successful or problematic. You combine quantitative data analysis with "
+                  "qualitative user research to provide comprehensive feature assessments. "
+                  "Your insights have helped companies improve user satisfaction scores by 40% "
+                  "on average. You always base recommendations on real user feedback and data.",
+        tools=[analyze_product_features, research_market_trends],
+        verbose=True,
+        allow_delegation=False
+    )
+
+
+def create_investment_analyst_agent(industry: str, stage: str):
+    """Create the Investment Analyst agent with funding analysis tools."""
+    return Agent(
+        role="Investment Analysis Specialist",
+        goal=f"Analyze investment potential and funding requirements for {stage} startups "
+             f"in the {industry} sector. Provide valuation insights, funding strategies, "
+             f"and investor targeting recommendations based on market data.",
+        backstory="You are a seasoned investment analyst with 20+ years experience in "
+                  "venture capital and private equity. Having evaluated over 1000 startups "
+                  "and participated in 200+ funding rounds, you have deep insights into "
+                  "what makes startups investable. You've worked at top-tier VC firms and "
+                  "understand investor psychology, due diligence processes, and valuation "
+                  "methodologies. Your analysis has helped startups raise over $500M in funding. "
+                  "You always ground your recommendations in market comparables and real data.",
+        tools=[analyze_investment_potential, research_market_trends],
         verbose=True,
         allow_delegation=False
     )
@@ -226,81 +271,89 @@ def create_budget_agent(destination: str):
 # TASK DEFINITIONS
 # ============================================================================
 
-def create_flight_task(flight_agent, destination: str, trip_dates: str, departure_city: str):
-    """Define the flight research task using real data."""
+def create_startup_discovery_task(startup_scout, industry: str, location: str, stage: str):
+    """Define the startup discovery task using real data."""
     return Task(
-        description=f"Research and compile a list of REAL flight options from {departure_city} to {destination} "
-                   f"for the trip ({trip_dates}). "
-                   f"Use actual current flight data from booking sites like Skyscanner, Kayak, "
-                   f"Google Flights, or Expedia. Find at least 2-3 different flight options from "
-                   f"major airlines, including details about departure times, arrival times, "
-                   f"duration, and current realistic prices. Provide "
-                   f"recommendations on which flight offers the best value considering both "
-                   f"price and convenience.",
-        agent=flight_agent,
-        expected_output=f"A detailed report with 2-3 REAL flight options from {departure_city} to {destination} "
-                       f"including airlines, times, duration, current prices, and a recommendation with reasoning based on "
-                       f"actual data from flight booking sites"
+        description=f"Research and compile a list of REAL emerging startups in the {industry} "
+                   f"industry within {location} at {stage} stage. "
+                   f"Use actual current data from Crunchbase, AngelList, PitchBook, "
+                   f"and recent funding news. Find at least 3-5 promising startups, "
+                   f"including details about their founding team, problem they solve, "
+                   f"funding history, traction metrics, and competitive advantages. Provide "
+                   f"recommendations on which startups show the most promise based on "
+                   f"market opportunity and execution capability.",
+        agent=startup_scout,
+        expected_output=f"A detailed report with 3-5 REAL emerging startups in {industry} "
+                       f"including founding teams, funding details, traction metrics, and strategic recommendations based on "
+                       f"actual data from startup databases and news sources"
     )
 
 
-def create_hotel_task(hotel_agent, destination: str, trip_dates: str):
-    """Define the hotel recommendation task using real data."""
-    # Determine main city for hotels
-    hotel_location = destination
-    if destination.lower() == "iceland":
-        hotel_location = "Reykjavik"
-    elif destination.lower() == "france":
-        hotel_location = "Paris"
-    elif destination.lower() == "japan":
-        hotel_location = "Tokyo"
-
+def create_competitive_analysis_task(market_analyst, startup_name: str, industry: str):
+    """Define the competitive analysis task using real data."""
     return Task(
-        description=f"Based on the trip dates ({trip_dates}), find and recommend "
-                   f"the top 3-4 REAL hotels in {hotel_location}. Research actual hotels "
-                   f"on Booking.com, TripAdvisor, Google Hotels, and Expedia. For each hotel, "
-                   f"provide the actual name, current guest ratings, real prices per night, "
-                   f"confirmed amenities, and explain why it suits this trip. "
-                   f"Include a mix of budget, mid-range, and luxury options with honest reviews.",
-        agent=hotel_agent,
-        expected_output=f"A curated list of 3-4 REAL hotel recommendations in {hotel_location} with actual details "
-                       f"about each hotel, confirmed amenities, real guest ratings, current prices, "
-                       f"and personalized recommendations based on actual guest reviews"
+        description=f"Based on the discovered startup {startup_name}, conduct a comprehensive "
+                   f"competitive analysis in the {industry} market. Research actual competitors "
+                   f"using G2, Capterra, ProductHunt, and industry reports. For each competitor, "
+                   f"provide their market positioning, unique value propositions, pricing strategies, "
+                   f"customer satisfaction scores, and recent strategic moves. "
+                   f"Include both direct competitors and potential threats from adjacent markets. "
+                   f"Analyze market trends and identify opportunities for differentiation.",
+        agent=market_analyst,
+        expected_output=f"A comprehensive competitive analysis for {startup_name} in {industry} with "
+                       f"detailed competitor profiles, market positioning matrix, SWOT analysis, "
+                       f"and strategic recommendations based on actual market data"
     )
 
 
-def create_itinerary_task(itinerary_agent, destination: str, trip_duration: str, trip_dates: str):
-    """Define the itinerary planning task using real information."""
+def create_product_pitch_task(product_strategist, startup_name: str, industry: str, target_audience: str):
+    """Define the product pitch creation task using market insights."""
     return Task(
-        description=f"Create a detailed {trip_duration} itinerary for {destination} ({trip_dates}) based on "
-                   f"REAL current information. Research actual attractions, their opening hours, "
-                   f"accessibility, and entry fees. Plan day-by-day activities including visits "
-                   f"to real attractions and verified sites. Include realistic estimated travel times between "
-                   f"locations, activity durations, and recommended visit times. Consider actual "
-                   f"weather patterns for this time period in {destination} and make the itinerary realistic and well-paced.",
-        agent=itinerary_agent,
-        expected_output=f"A detailed day-by-day itinerary for {destination} with REAL activities based on verified "
-                       f"attractions, realistic travel times, accurate estimated durations, current "
-                       f"entry fees, and practical tips for {trip_duration} trip to {destination}"
+        description=f"Create a compelling product pitch for {startup_name} in the {industry} sector "
+                   f"targeting {target_audience}. Based on the competitive analysis, craft a unique "
+                   f"value proposition that differentiates from competitors. Develop key messaging "
+                   f"that addresses customer pain points and highlights competitive advantages. "
+                   f"Create a pitch deck outline with compelling narrative, market opportunity sizing, "
+                   f"go-to-market strategy, and investment highlights. Use real market data and "
+                   f"customer insights to support your recommendations.",
+        agent=product_strategist,
+        expected_output=f"A comprehensive product pitch for {startup_name} including unique value proposition, "
+                       f"key messaging framework, pitch deck outline with 10-12 slides, go-to-market strategy, "
+                       f"and investment highlights supported by real market data"
     )
 
 
-def create_budget_task(budget_agent, destination: str, trip_duration: str):
-    """Define the budget calculation task using real cost data."""
+def create_feature_analysis_task(feature_analyst, product_name: str, category: str):
+    """Define the feature analysis task using real user feedback."""
     return Task(
-        description=f"Based on the REAL flight options, hotel recommendations, and itinerary "
-                   f"created by the other agents, calculate a comprehensive budget for the "
-                   f"{trip_duration} {destination} trip using current pricing. Research and include actual "
-                   f"costs for flights, accommodation, meals (use real restaurant prices in the destination), "
-                   f"activities/tours (verified prices), transportation within {destination}, "
-                   f"and miscellaneous expenses. Provide total cost estimates "
-                   f"for budget, mid-range, and luxury options based on real prices. Suggest "
-                   f"genuine cost-saving tips based on current market conditions.",
-        agent=budget_agent,
-        expected_output=f"A comprehensive budget report with itemized REAL costs for flights, "
-                       f"accommodation, meals, activities with actual entry fees, transportation, "
-                       f"and total realistic estimates at different budget levels, plus "
-                       f"evidence-based cost-saving recommendations for a {trip_duration} trip to {destination}"
+        description=f"Based on the product pitch for {product_name}, conduct a detailed feature "
+                   f"analysis in the {category} space. Research actual user feedback from "
+                   f"ProductHunt, G2, Reddit, and app store reviews. Analyze core features, "
+                   f"user satisfaction levels, feature requests, and pain points. Compare features "
+                   f"with competing products and identify gaps in the market. Provide recommendations "
+                   f"for feature prioritization, potential innovations, and product roadmap based on "
+                   f"real user needs and market trends.",
+        agent=feature_analyst,
+        expected_output=f"A comprehensive feature analysis for {product_name} including feature comparison matrix, "
+                       f"user satisfaction scores, top feature requests, competitive feature gaps, "
+                       f"and prioritized roadmap recommendations based on real user feedback"
+    )
+
+
+def create_investment_analysis_task(investment_analyst, startup_name: str, industry: str, stage: str):
+    """Define the investment analysis task using real funding data."""
+    return Task(
+        description=f"Based on all the previous analyses for {startup_name}, conduct a comprehensive "
+                   f"investment analysis for this {stage} stage startup in {industry}. Research actual "
+                   f"funding rounds, valuations, and investor activity in this space using PitchBook, "
+                   f"Crunchbase, and recent news. Calculate realistic funding requirements, suggest "
+                   f"appropriate valuation range, identify target investors who are active in this "
+                   f"sector and stage. Provide a fundraising strategy including timeline, milestones, "
+                   f"and key metrics to track. Analyze potential risks and returns for investors.",
+        agent=investment_analyst,
+        expected_output=f"A detailed investment analysis for {startup_name} including funding requirements, "
+                       f"valuation recommendation with comparables, target investor list with rationale, "
+                       f"fundraising timeline and strategy, key metrics and milestones, and risk/return analysis"
     )
 
 
@@ -308,31 +361,32 @@ def create_budget_task(budget_agent, destination: str, trip_duration: str):
 # CREW ORCHESTRATION
 # ============================================================================
 
-def main(destination: str = "Iceland", trip_duration: str = "5 days",
-         trip_dates: str = "January 15-20, 2026", departure_city: str = "New York",
-         travelers: int = 2, budget_preference: str = "mid-range"):
+def main(industry: str = "AI/ML", location: str = "San Francisco Bay Area",
+         startup_stage: str = "Seed to Series A", target_audience: str = "B2B SaaS",
+         analysis_focus: str = "comprehensive", category: str = "productivity tools"):
     """
-    Main function to orchestrate the travel planning crew.
+    Main function to orchestrate the startup analysis crew.
 
     Args:
-        destination: Travel destination (e.g., "Iceland", "France", "Japan")
-        trip_duration: Duration of trip (e.g., "5 days", "7 days")
-        trip_dates: Specific dates (e.g., "January 15-20, 2026")
-        departure_city: City you're departing from (e.g., "New York", "Los Angeles")
-        travelers: Number of travelers
-        budget_preference: Budget level ("budget", "mid-range", "luxury")
+        industry: Target industry for analysis (e.g., "AI/ML", "FinTech", "HealthTech")
+        location: Geographic focus (e.g., "San Francisco Bay Area", "New York", "Global")
+        startup_stage: Stage of startups to analyze (e.g., "Seed to Series A", "Series B+")
+        target_audience: Target market (e.g., "B2B SaaS", "B2C Mobile", "Enterprise")
+        analysis_focus: Type of analysis ("comprehensive", "competitive", "product-focused")
+        category: Product category for feature analysis (e.g., "productivity tools", "analytics")
     """
 
     print("=" * 80)
-    print("CrewAI Multi-Agent Travel Planning System (REAL API VERSION)")
-    print(f"Planning a {trip_duration} Trip to {destination}")
+    print("CrewAI Multi-Agent Startup Analysis System (REAL API VERSION)")
+    print(f"Analyzing {startup_stage} Startups in {industry}")
     print("=" * 80)
     print()
-    print(f"📍 Destination: {destination}")
-    print(f"📅 Dates: {trip_dates}")
-    print(f"✈️  Departure from: {departure_city}")
-    print(f"👥 Travelers: {travelers}")
-    print(f"💰 Budget: {budget_preference}")
+    print(f"🚀 Industry Focus: {industry}")
+    print(f"📍 Location: {location}")
+    print(f"📊 Startup Stage: {startup_stage}")
+    print(f"🎯 Target Audience: {target_audience}")
+    print(f"🔍 Analysis Type: {analysis_focus}")
+    print(f"📦 Product Category: {category}")
     print()
 
     # Validate configuration before proceeding
@@ -355,45 +409,50 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
     Config.print_summary()
     print()
     print("⚠️  IMPORTANT: This version uses REAL OpenAI API calls and web search")
-    print("    Agents will research actual current prices and real information")
+    print("    Agents will research actual startup data and market information")
     print()
     print("Tip: Check your API usage at https://platform.openai.com/account/usage")
     print()
 
-    # Create agents with destination parameters
-    print("[1/4] Creating Flight Specialist Agent (researches real flights)...")
-    flight_agent = create_flight_agent(destination, trip_dates)
+    # Create agents with startup parameters
+    print("[1/5] Creating Startup Scout Agent (discovers emerging startups)...")
+    startup_scout = create_startup_scout_agent(industry, location)
 
-    print("[2/4] Creating Accommodation Specialist Agent (researches real hotels)...")
-    hotel_agent = create_hotel_agent(destination, trip_dates)
+    print("[2/5] Creating Market Analyst Agent (analyzes competition)...")
+    market_analyst = create_market_analyst_agent(industry)
 
-    print("[3/4] Creating Travel Planner Agent (researches real attractions)...")
-    itinerary_agent = create_itinerary_agent(destination, trip_duration)
+    print("[3/5] Creating Product Strategist Agent (crafts pitches)...")
+    product_strategist = create_product_strategist_agent(industry)
 
-    print("[4/4] Creating Financial Advisor Agent (analyzes real costs)...")
-    budget_agent = create_budget_agent(destination)
+    print("[4/5] Creating Feature Analyst Agent (evaluates products)...")
+    feature_analyst = create_feature_analyst_agent(category)
+
+    print("[5/5] Creating Investment Analyst Agent (analyzes funding)...")
+    investment_analyst = create_investment_analyst_agent(industry, startup_stage)
 
     print("\n✅ All agents created successfully!")
     print()
 
-    # Create tasks with destination parameters
+    # Create tasks with startup parameters
     print("Creating tasks for the crew...")
-    flight_task = create_flight_task(flight_agent, destination, trip_dates, departure_city)
-    hotel_task = create_hotel_task(hotel_agent, destination, trip_dates)
-    itinerary_task = create_itinerary_task(itinerary_agent, destination, trip_duration, trip_dates)
-    budget_task = create_budget_task(budget_agent, destination, trip_duration)
+    # For demo purposes, we'll use a placeholder startup name that will be discovered
+    startup_discovery_task = create_startup_discovery_task(startup_scout, industry, location, startup_stage)
+    competitive_analysis_task = create_competitive_analysis_task(market_analyst, "[To be discovered]", industry)
+    product_pitch_task = create_product_pitch_task(product_strategist, "[To be discovered]", industry, target_audience)
+    feature_analysis_task = create_feature_analysis_task(feature_analyst, "[To be discovered]", category)
+    investment_analysis_task = create_investment_analysis_task(investment_analyst, "[To be discovered]", industry, startup_stage)
 
     print("Tasks created successfully!")
     print()
 
     # Create the crew with sequential task execution
-    print("Forming the Travel Planning Crew...")
-    print("Task Sequence: FlightAgent → HotelAgent → ItineraryAgent → BudgetAgent")
+    print("Forming the Startup Analysis Crew...")
+    print("Task Sequence: StartupScout → MarketAnalyst → ProductStrategist → FeatureAnalyst → InvestmentAnalyst")
     print()
 
     crew = Crew(
-        agents=[flight_agent, hotel_agent, itinerary_agent, budget_agent],
-        tasks=[flight_task, hotel_task, itinerary_task, budget_task],
+        agents=[startup_scout, market_analyst, product_strategist, feature_analyst, investment_analyst],
+        tasks=[startup_discovery_task, competitive_analysis_task, product_pitch_task, feature_analysis_task, investment_analysis_task],
         verbose=True,
         process="sequential"  # Sequential task execution
     )
@@ -401,18 +460,18 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
     # Execute the crew
     print("=" * 80)
     print("Starting Crew Execution with REAL API Calls...")
-    print(f"Planning {trip_duration} trip to {destination} ({trip_dates})")
+    print(f"Analyzing {startup_stage} startups in {industry} sector")
     print("=" * 80)
     print()
 
     try:
         result = crew.kickoff(inputs={
-            "trip_destination": destination,
-            "trip_duration": trip_duration,
-            "trip_dates": trip_dates,
-            "departure_city": departure_city,
-            "travelers": travelers,
-            "budget_preference": budget_preference
+            "industry": industry,
+            "location": location,
+            "startup_stage": startup_stage,
+            "target_audience": target_audience,
+            "analysis_focus": analysis_focus,
+            "category": category
         })
 
         print()
@@ -420,43 +479,43 @@ def main(destination: str = "Iceland", trip_duration: str = "5 days",
         print("✅ Crew Execution Completed Successfully!")
         print("=" * 80)
         print()
-        print(f"FINAL TRAVEL PLAN REPORT FOR {destination.upper()} (Based on Real API Data):")
+        print(f"FINAL STARTUP ANALYSIS REPORT FOR {industry.upper()} (Based on Real API Data):")
         print("-" * 80)
         print(result)
         print("-" * 80)
 
         # Save output to file
-        output_filename = f"crewai_output_{destination.lower()}.txt"
+        output_filename = f"crewai_startup_analysis_{industry.lower().replace('/', '_')}.txt"
         output_path = Path(__file__).parent / output_filename
 
         with open(output_path, "w") as f:
             f.write("=" * 80 + "\n")
-            f.write("CrewAI Multi-Agent Travel Planning System - Real API Execution Report\n")
-            f.write(f"Planning a {trip_duration} Trip to {destination}\n")
+            f.write("CrewAI Multi-Agent Startup Analysis System - Real API Execution Report\n")
+            f.write(f"Analyzing {startup_stage} Startups in {industry}\n")
             f.write("=" * 80 + "\n\n")
-            f.write(f"Trip Details:\n")
-            f.write(f"  Destination: {destination}\n")
-            f.write(f"  Duration: {trip_duration}\n")
-            f.write(f"  Dates: {trip_dates}\n")
-            f.write(f"  Departure: {departure_city}\n")
-            f.write(f"  Travelers: {travelers}\n")
-            f.write(f"  Budget Preference: {budget_preference}\n\n")
+            f.write(f"Analysis Parameters:\n")
+            f.write(f"  Industry: {industry}\n")
+            f.write(f"  Location: {location}\n")
+            f.write(f"  Startup Stage: {startup_stage}\n")
+            f.write(f"  Target Audience: {target_audience}\n")
+            f.write(f"  Analysis Focus: {analysis_focus}\n")
+            f.write(f"  Product Category: {category}\n\n")
             f.write(f"Execution Time: {datetime.now()}\n")
             f.write(f"API Version: REAL API CALLS (OpenAI GPT-4)\n")
             f.write(f"Data Source: Web research via OpenAI\n\n")
             f.write("IMPORTANT NOTES:\n")
-            f.write("- All flight prices, hotel costs, and attraction information is based on real data\n")
-            f.write("- Prices are current as of the date this was run\n")
-            f.write("- Hotel availability and prices may vary by booking date\n")
-            f.write("- Weather conditions and attraction hours should be verified before travel\n\n")
-            f.write("FINAL TRAVEL PLAN REPORT:\n")
+            f.write("- All startup data, funding information, and market analysis is based on real data\n")
+            f.write("- Information is current as of the date this was run\n")
+            f.write("- Startup valuations and funding status may change rapidly\n")
+            f.write("- Competitive landscape and market trends should be verified before investment decisions\n\n")
+            f.write("FINAL STARTUP ANALYSIS REPORT:\n")
             f.write("-" * 80 + "\n")
             f.write(str(result))
             f.write("\n" + "-" * 80 + "\n")
 
         print(f"\n✅ Output saved to {output_filename}")
         print("ℹ️  Note: All data in this report is based on REAL API calls to OpenAI")
-        print("    and research of current travel information sources.")
+        print("    and research of current startup databases and market sources.")
 
     except Exception as e:
         print(f"\n❌ Error during crew execution: {str(e)}")
@@ -475,28 +534,28 @@ if __name__ == "__main__":
     import sys
 
     kwargs = {
-        "destination": "Iceland",
-        "trip_duration": "5 days",
-        "trip_dates": "January 15-20, 2026",
-        "departure_city": "New York",
-        "travelers": 2,
-        "budget_preference": "mid-range"
+        "industry": "AI/ML",
+        "location": "San Francisco Bay Area",
+        "startup_stage": "Seed to Series A",
+        "target_audience": "B2B SaaS",
+        "analysis_focus": "comprehensive",
+        "category": "productivity tools"
     }
 
     # Parse command line arguments (optional)
-    # Usage: python crewai_demo.py [destination] [duration] [departure_city]
-    # Example: python crewai_demo.py "France" "7 days" "Los Angeles"
+    # Usage: python crewai_demo.py [industry] [location] [startup_stage]
+    # Example: python crewai_demo.py "FinTech" "New York" "Series B+"
     if len(sys.argv) > 1:
-        kwargs["destination"] = sys.argv[1]
+        kwargs["industry"] = sys.argv[1]
     if len(sys.argv) > 2:
-        kwargs["trip_duration"] = sys.argv[2]
+        kwargs["location"] = sys.argv[2]
     if len(sys.argv) > 3:
-        kwargs["departure_city"] = sys.argv[3]
+        kwargs["startup_stage"] = sys.argv[3]
     if len(sys.argv) > 4:
-        kwargs["trip_dates"] = sys.argv[4]
+        kwargs["target_audience"] = sys.argv[4]
     if len(sys.argv) > 5:
-        kwargs["travelers"] = int(sys.argv[5])
+        kwargs["analysis_focus"] = sys.argv[5]
     if len(sys.argv) > 6:
-        kwargs["budget_preference"] = sys.argv[6]
+        kwargs["category"] = sys.argv[6]
 
     main(**kwargs)
