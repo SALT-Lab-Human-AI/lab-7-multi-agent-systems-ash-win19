@@ -139,6 +139,31 @@ def research_market_trends(industry: str, timeframe: str = "2025") -> str:
     """
 
 
+@tool
+def analyze_investment_potential(startup_name: str, industry: str, stage: str) -> str:
+    """
+    Analyze investment potential and funding requirements for a startup.
+    Provides insights on valuation, funding needs, and investor appeal.
+    """
+    search_query = f"{startup_name} {industry} funding valuation {stage} investment metrics"
+
+    return f"""
+    Research task: Analyze investment potential for {startup_name} in {industry} at {stage} stage.
+
+    Please research and provide:
+    1. Typical funding amounts for {stage} stage in {industry}
+    2. Key metrics investors look for (ARR, growth rate, burn rate, etc.)
+    3. Comparable startup valuations and exit multiples
+    4. Investor landscape and active VCs in this space
+    5. Funding timeline and milestones expectations
+    6. Risk factors and mitigation strategies
+    7. ROI projections and exit scenarios
+
+    Use data from PitchBook, Crunchbase, and recent funding rounds.
+    Focus on realistic valuation and actionable fundraising advice.
+    """
+
+
 # ============================================================================
 # AGENT DEFINITIONS
 # ============================================================================
@@ -222,6 +247,26 @@ def create_feature_analyst_agent(category: str):
     )
 
 
+def create_investment_analyst_agent(industry: str, stage: str):
+    """Create the Investment Analyst agent with funding analysis tools."""
+    return Agent(
+        role="Investment Analysis Specialist",
+        goal=f"Analyze investment potential and funding requirements for {stage} startups "
+             f"in the {industry} sector. Provide valuation insights, funding strategies, "
+             f"and investor targeting recommendations based on market data.",
+        backstory="You are a seasoned investment analyst with 20+ years experience in "
+                  "venture capital and private equity. Having evaluated over 1000 startups "
+                  "and participated in 200+ funding rounds, you have deep insights into "
+                  "what makes startups investable. You've worked at top-tier VC firms and "
+                  "understand investor psychology, due diligence processes, and valuation "
+                  "methodologies. Your analysis has helped startups raise over $500M in funding. "
+                  "You always ground your recommendations in market comparables and real data.",
+        tools=[analyze_investment_potential, research_market_trends],
+        verbose=True,
+        allow_delegation=False
+    )
+
+
 # ============================================================================
 # TASK DEFINITIONS
 # ============================================================================
@@ -295,6 +340,23 @@ def create_feature_analysis_task(feature_analyst, product_name: str, category: s
     )
 
 
+def create_investment_analysis_task(investment_analyst, startup_name: str, industry: str, stage: str):
+    """Define the investment analysis task using real funding data."""
+    return Task(
+        description=f"Based on all the previous analyses for {startup_name}, conduct a comprehensive "
+                   f"investment analysis for this {stage} stage startup in {industry}. Research actual "
+                   f"funding rounds, valuations, and investor activity in this space using PitchBook, "
+                   f"Crunchbase, and recent news. Calculate realistic funding requirements, suggest "
+                   f"appropriate valuation range, identify target investors who are active in this "
+                   f"sector and stage. Provide a fundraising strategy including timeline, milestones, "
+                   f"and key metrics to track. Analyze potential risks and returns for investors.",
+        agent=investment_analyst,
+        expected_output=f"A detailed investment analysis for {startup_name} including funding requirements, "
+                       f"valuation recommendation with comparables, target investor list with rationale, "
+                       f"fundraising timeline and strategy, key metrics and milestones, and risk/return analysis"
+    )
+
+
 # ============================================================================
 # CREW ORCHESTRATION
 # ============================================================================
@@ -353,17 +415,20 @@ def main(industry: str = "AI/ML", location: str = "San Francisco Bay Area",
     print()
 
     # Create agents with startup parameters
-    print("[1/4] Creating Startup Scout Agent (discovers emerging startups)...")
+    print("[1/5] Creating Startup Scout Agent (discovers emerging startups)...")
     startup_scout = create_startup_scout_agent(industry, location)
 
-    print("[2/4] Creating Market Analyst Agent (analyzes competition)...")
+    print("[2/5] Creating Market Analyst Agent (analyzes competition)...")
     market_analyst = create_market_analyst_agent(industry)
 
-    print("[3/4] Creating Product Strategist Agent (crafts pitches)...")
+    print("[3/5] Creating Product Strategist Agent (crafts pitches)...")
     product_strategist = create_product_strategist_agent(industry)
 
-    print("[4/4] Creating Feature Analyst Agent (evaluates products)...")
+    print("[4/5] Creating Feature Analyst Agent (evaluates products)...")
     feature_analyst = create_feature_analyst_agent(category)
+
+    print("[5/5] Creating Investment Analyst Agent (analyzes funding)...")
+    investment_analyst = create_investment_analyst_agent(industry, startup_stage)
 
     print("\n✅ All agents created successfully!")
     print()
@@ -375,18 +440,19 @@ def main(industry: str = "AI/ML", location: str = "San Francisco Bay Area",
     competitive_analysis_task = create_competitive_analysis_task(market_analyst, "[To be discovered]", industry)
     product_pitch_task = create_product_pitch_task(product_strategist, "[To be discovered]", industry, target_audience)
     feature_analysis_task = create_feature_analysis_task(feature_analyst, "[To be discovered]", category)
+    investment_analysis_task = create_investment_analysis_task(investment_analyst, "[To be discovered]", industry, startup_stage)
 
     print("Tasks created successfully!")
     print()
 
     # Create the crew with sequential task execution
     print("Forming the Startup Analysis Crew...")
-    print("Task Sequence: StartupScout → MarketAnalyst → ProductStrategist → FeatureAnalyst")
+    print("Task Sequence: StartupScout → MarketAnalyst → ProductStrategist → FeatureAnalyst → InvestmentAnalyst")
     print()
 
     crew = Crew(
-        agents=[startup_scout, market_analyst, product_strategist, feature_analyst],
-        tasks=[startup_discovery_task, competitive_analysis_task, product_pitch_task, feature_analysis_task],
+        agents=[startup_scout, market_analyst, product_strategist, feature_analyst, investment_analyst],
+        tasks=[startup_discovery_task, competitive_analysis_task, product_pitch_task, feature_analysis_task, investment_analysis_task],
         verbose=True,
         process="sequential"  # Sequential task execution
     )
